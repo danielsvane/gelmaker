@@ -1,0 +1,6 @@
+#!/bin/bash
+
+tmux send-keys -t dev:0.1 C-c
+cd gelmaker-controller
+platformio run -t upload
+tmux send-keys -t dev:0.1 'npm run dev' C-m

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+tmux new -s dev -d
+tmux split-window -h -t dev
+tmux split-window -v -t dev
+tmux send-keys -t dev:0.0 'cd gelmaker-controller' C-m
+tmux send-keys -t dev:0.1 'cd gelmaker-server && npm run dev' C-m
+tmux send-keys -t dev:0.2 'cd gelmaker-ui && npm run dev' C-m
+tmux attach -t dev
