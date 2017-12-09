@@ -2,8 +2,14 @@ unsigned long currentTime;
 unsigned long targetTime;
 unsigned long startTime;
 
+unsigned long statusInterval = 500;
+unsigned long lastStatusTime = 0;
+
 String command;
 String payload;
+
+unsigned int pressure;
+unsigned int weight;
 
 String inputString = "";
 boolean dispensing = false;
@@ -16,12 +22,18 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
   
+  //analogReference(INTERNAL1V1);
+  
   Serial.begin(9600);
   inputString.reserve(400);
 }
 
 void loop() {
   currentTime = millis();
+
+  if(currentTime-lastStatusTime >= statusInterval){
+    sendStatus();
+  }
 
   // Uses millis to time dispensing over many seconds.
   // Should find a way to use timers instead.
@@ -30,6 +42,20 @@ void loop() {
       stopDispense();
     }
   }
+}
+
+void sendStatus(){
+  pressure = analogRead(0);
+  Serial.print("status:");
+  Serial.print(pressure);
+  
+  weight = analogRead(1);
+  Serial.print(";");
+  Serial.print(weight);
+  
+  Serial.println("");
+  
+  lastStatusTime = millis();
 }
 
 // The getValue() function is the least optimized piece of code in history.
@@ -53,13 +79,17 @@ void parseSerial(){
 }
 
 void startDispense(long unsigned int dispenseTime){
-  digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(7, HIGH);
-  targetTime = dispenseTime;
-  startTime = millis();
-  dispensing = true;
-  Serial.print("dispensing:");
-  Serial.println(dispenseTime);
+  if(pressure > 100){
+    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(7, HIGH);
+    targetTime = dispenseTime;
+    startTime = millis();
+    dispensing = true;
+    Serial.print("dispensing:");
+    Serial.println(dispenseTime);
+  } else {
+    Serial.println("error:bufferlow");
+  }
 }
 
 void stopDispense(){

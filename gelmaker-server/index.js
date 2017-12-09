@@ -8,14 +8,19 @@ port.pipe(parser)
 
 parser.on('data', (data) => {
   
+  //console.log(data)
+  
   let command = data.split(':')[0]
   let payload = data.split(':')[1].trim()
   
-  console.log(command, payload)
+  //console.log(command, payload)
   
   switch(command){
     case "dispensing":
       handleDispensing(payload)
+      break
+    case "status":
+      handleStatus(payload)
       break
   }
 })
@@ -24,7 +29,8 @@ io.on('connect', (socket) => {
   console.log('Client connected')
   
   socket.on('dispenseBuffer', (amount) => {
-    amount *= 500
+    // Convert ml to ms. Pump runs 1375 ms/ml
+    amount *= 1375
     port.write('dispense:'+amount+'\n')
   })
   
@@ -32,6 +38,16 @@ io.on('connect', (socket) => {
     port.write('dispensestop\n')
   })
 })
+
+function handleStatus(status){
+  let statii = status.split(';')
+  //console.log(statii[1])
+  let bufferStatus = statii[0]
+  let weightStatus = statii[1]
+  
+  io.sockets.emit('bufferStatus', bufferStatus)
+  io.sockets.emit('weightStatus', weightStatus)
+}
 
 function handleDispensing(payload){
   if(payload == 'done'){

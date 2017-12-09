@@ -2,5 +2,5 @@
 
 tmux send-keys -t dev:0.1 C-c
 cd gelmaker-controller
-platformio run -t upload
+platformio run -e megaatmega2560 -t upload
 tmux send-keys -t dev:0.1 'npm run dev' C-m

@@ -1,27 +1,32 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12 col-lg-6 col-sm-6">
-        <Controls />
-      </div>      
-      <div class="col-12 col-lg-6 col-sm-6">
-        <BufferStatus />
-      </div>
-    </div>
+  <div>
+    <Navigation />
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 
-import Controls from './Controls.vue'
-import BufferStatus from './BufferStatus.vue'
-import socket from '../imports/socket.js'
+  import Navigation from './Navigation.vue'
 
-export default {
-  components: {
-    Controls,
-    BufferStatus
+  export default {
+    components: {
+      Navigation
+    }
   }
-}
 
 </script>
+
+<style>
+
+  body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    font-family: 'Quicksand';
+  }
+
+  .container {
+    display: flex;
+  }
+</style>
